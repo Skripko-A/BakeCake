@@ -8,7 +8,7 @@ from .views import show_main, show_lk, show_lk_order
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', show_main),
-    path('lk', show_lk),
-    path('lk-order', show_lk_order)
+    path('', show_main, name='show_main'),
+    path('lk', show_lk, name='show_lk'),
+    path('lk-order', show_lk_order, name='show_lk-order')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
