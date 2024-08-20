@@ -7,3 +7,16 @@ def show_main(request):
     context = {}
     rendered_page = template.render(context, request)
     return HttpResponse(rendered_page)
+
+def show_lk(request):
+    template = loader.get_template('lk.html')
+    context = {}
+    rendered_page = template.render(context, request)
+    return HttpResponse(rendered_page)
+
+
+def show_lk_order(request):
+    template = loader.get_template('lk-order.html')
+    context = {}
+    rendered_page = template.render(context, request)
+    return HttpResponse(rendered_page)
