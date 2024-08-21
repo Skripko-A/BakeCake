@@ -98,21 +98,8 @@ Vue.createApp({
                     return ' время доставки';
                 }
             },
-            DATA: {
-                Levels: ['не выбрано', '1', '2', '3'],
-                Forms: ['не выбрано', 'Круг', 'Квадрат', 'Прямоугольник'],
-                Toppings: ['не выбрано', 'Без', 'Белый соус', 'Карамельный', 'Кленовый', 'Черничный', 'Молочный шоколад', 'Клубничный'],
-                Berries: ['нет', 'Ежевика', 'Малина', 'Голубика', 'Клубника'],
-                Decors: [ 'нет', 'Фисташки', 'Безе', 'Фундук', 'Пекан', 'Маршмеллоу', 'Марципан']
-            },
-            Costs: {
-                Levels: [0, 400, 750, 1100],
-                Forms: [0, 600, 400, 1000],
-                Toppings: [0, 0, 200, 180, 200, 300, 350, 200],
-                Berries: [0, 400, 300, 450, 500],
-                Decors: [0, 300, 400, 350, 300, 200, 280],
-                Words: 500
-            },
+            DATA: djangoData,
+            Costs: djangoCosts,
             Levels: 0,
             Form: 0,
             Topping: 0,
@@ -122,9 +109,9 @@ Vue.createApp({
             Comments: '',
             Designed: false,
 
-            Name: '',
-            Phone: null,
-            Email: null,
+            Name: userData.name || '',
+            Phone: userData.phone || '',
+            Email: userData.email || '',
             Address: null,
             Dates: null,
             Time: null,
