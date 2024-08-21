@@ -51,10 +51,9 @@ class Cake(models.Model):
         return f'{self.title}'
 
 
-
 class Order(models.Model):
     cake = ForeignKey(Cake, verbose_name='Заказ', on_delete=PROTECT, related_name='orders')
-    customer = ForeignKey(Client, verbose_name=' Клиент', on_delete=models.CASCADE, related_name='orders')
+    customer = ForeignKey(User, verbose_name=' Клиент', on_delete=models.CASCADE, related_name='orders')
     address = models.TextField(verbose_name='Адрес доставки')
     date = models.DateField(verbose_name='Дата')
     phone = PhoneNumberField(unique=True)
