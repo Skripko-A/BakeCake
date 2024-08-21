@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import ForeignKey, SET_NULL, PROTECT
 from phonenumber_field.modelfields import PhoneNumberField
@@ -52,8 +51,8 @@ class Cake(models.Model):
 
 
 class Order(models.Model):
-    cake = ForeignKey(Cake, verbose_name='Заказ', on_delete=PROTECT, related_name='orders')
-    customer = ForeignKey(User, verbose_name=' Клиент', on_delete=models.CASCADE, related_name='orders')
+    cake = ForeignKey(Cake, verbose_name='Торт', on_delete=PROTECT, related_name='orders')
+    customer = ForeignKey(Client, verbose_name='Клиент', on_delete=models.CASCADE, related_name='orders')
     address = models.TextField(verbose_name='Адрес доставки')
     date = models.DateField(verbose_name='Дата')
     phone = PhoneNumberField(unique=True)
