@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container mt-header">
+        <article class="row pt-header d-flex justify-content-center">
+            <h2 class="font_Gogh fs_40 cake_blue text-center mb-3">{{ title }}</h2>
+            <div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center">
+                <img src="{% static 'img/image2.png' %}" alt="" class="">
+                <span class="cake_blue mt-4 fw-lighter mb-4">{{ description }}</span><br>
+                <form action="/">
+                    <button class="btn text-white rounded-pill shadow-none cake__button cake__bg_pink">Заказать</button>
+                </form>
+            </div>
+            <div class="col-12 col-lg-4 d-flex">
+                <div class="cake__card p-4 position-relative cake_grey">
+                    <span class="cake__badge rounded-pill">?</span>
+                    <span>Количество уровней: {{ levels_number }}</span>
+                    <span>Форма уровней: {{ shape }}</span>
+                    <p>Топинг: {{ topping }}</p>
+                    <span>Дополнительно:</span>
+                    <ul>
+                        <li>Ягоды: {{ berry }}</li>
+                        <li>Декор: {{ decor }}</li>
+                    </ul>
+                    <span>Надпись: {{ inscription }}</span>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+{% endblock %}
