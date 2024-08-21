@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container mt-header">
+        <article class="row pt-header d-flex justify-content-center">
+                <h2 class="font_Gogh fs_40 cake_blue text-center mb-3">{{ title }}</h2>
+                <div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center" style="padding-top: 30px;">
+                    <img src="{% static 'img/image2.png' %}" alt="" class="">
+                    <span class="cake_blue mt-4 fw-lighter mb-4">{{ description }}</span><br>
+                    <span class="cake_blue mt-4 fw-lighter mb-4">
+                        Количество уровней: {{ levels_number }}<br>
+                        Форма: {{ shape }}<br>
+                        Топпинг: {{ topping }}<br>
+                        Ягода: {{ berrie }}<br>
+                        Декор: {{ decor }}<br>
+                        Надпись: {{ inscription }}<br>
+                    </span>
+                    <form action="/">
+                        <button class="btn text-white rounded-pill shadow-none cake__button cake__bg_pink">Заказать</button>
+                    </form>
+                </div>
+            </article>
+    </div>
+</main>
+{% endblock %}

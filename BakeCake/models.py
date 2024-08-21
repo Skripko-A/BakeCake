@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import ForeignKey, SET_NULL, PROTECT
 from phonenumber_field.modelfields import PhoneNumberField
+
+from accounts.models import Client
 
 
 class Topping(models.Model):
@@ -36,10 +37,9 @@ class Cake(models.Model):
     inscription = models.CharField(max_length=25, verbose_name='Надпись', blank=True, null=True)
 
 
-
 class Order(models.Model):
     cake = ForeignKey(Cake, verbose_name='Заказ', on_delete=PROTECT, related_name='orders')
-    customer = ForeignKey(User, verbose_name=' Клиент', on_delete=models.CASCADE, related_name='orders')
+    customer = ForeignKey(Client, verbose_name=' Клиент', on_delete=models.CASCADE, related_name='orders')
     address = models.TextField(verbose_name='Адрес доставки')
     date = models.DateField(verbose_name='Дата', default=(datetime.today() + timedelta(days=1)))
     phone = PhoneNumberField(unique=True)
