@@ -39,7 +39,7 @@ class Cake(models.Model):
     shape = models.CharField(choices=shapes, max_length=25, verbose_name='Форма (круг, квадрат, прямоугольник')
     topping = models.ForeignKey(Topping, verbose_name='Топпинг', on_delete=models.SET_NULL,
                                 related_name='cakes', null=True, blank=True)
-    berrie = models.ForeignKey(Berrie, verbose_name='Ягода', on_delete=models.SET_NULL,
+    berry = models.ForeignKey(Berrie, verbose_name='Ягода', on_delete=models.SET_NULL,
                                related_name='cakes', null=True, blank=True)
     decor = models.ForeignKey(Decor, verbose_name='Декор', on_delete=models.SET_NULL,
                               related_name='cakes', null=True, blank=True)
@@ -56,6 +56,7 @@ class Order(models.Model):
     address = models.TextField(verbose_name='Адрес доставки')
     date = models.DateField(verbose_name='Дата')
     phone = PhoneNumberField(unique=True)
+    comment = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу')
 
     def __str__(self):
         return f'{self.cake}{self.customer}'
