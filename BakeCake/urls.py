@@ -11,4 +11,4 @@ urlpatterns = [
     path('', show_main, name='show_main'),
     path('lk', show_lk, name='show_lk'),
     path('lk-order', show_lk_order, name='show_lk-order')
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
