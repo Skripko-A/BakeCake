@@ -10,6 +10,7 @@ from accounts.models import Client
 class Topping(models.Model):
     title = models.CharField(max_length=25, verbose_name='Название')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
 
     def __str__(self):
         return f'{self.title}'
@@ -17,6 +18,7 @@ class Topping(models.Model):
 class Berrie(models.Model):
     title = models.CharField(max_length=25, verbose_name='Название')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
 
     def __str__(self):
         return f'{self.title}'
@@ -24,6 +26,7 @@ class Berrie(models.Model):
 class Decor(models.Model):
     title = models.CharField(max_length=25, verbose_name='Название')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
 
     def __str__(self):
         return f'{self.title}'
@@ -43,6 +46,8 @@ class Cake(models.Model):
     decor = models.ForeignKey(Decor, verbose_name='Декор', on_delete=models.SET_NULL,
                               related_name='cakes', null=True, blank=True)
     inscription = models.CharField(max_length=25, verbose_name='Надпись', blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
+
 
     def __str__(self):
         return f'{self.title}'
