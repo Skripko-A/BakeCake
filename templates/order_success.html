@@ -12,21 +12,20 @@
                         <span>Email: {{ order.email }}</span>
                         <span>Адрес: {{ order.address }}</span>
                         <p></p>
-                        {% if cake %}
-                            <span>Торт: {{ cake.title }}</span>
+                        {% if order.cake %}
+                            <span>Торт: {{ order.cake.title }}</span>
                             <ul>
-                                <li>Количество слоёв: {{ cake.levels_number.number }}</li>
-                                <li>Форма: {{ cake.shape.get_title_display }}</li>
-                                <li>Топпинг: {{ cake.topping.title }}</li>
-                                <li>Ягода: {{ cake.berry.title }}</li>
-                                <li>Декор: {{ cake.decor.title }}</li>
-                                {% if cake.inscription %}
-                                    <li>Надпись: {{ cake.inscription }}</li>
+                                <li>Количество слоёв: {{ order.cake.levels_number.number }}</li>
+                                <li>Форма: {{ order.cake.shape.get_title_display }}</li>
+                                <li>Топпинг: {{ order.cake.topping.title }}</li>
+                                <li>Ягода: {{ order.cake.berry.title }}</li>
+                                <li>Декор: {{ order.cake.decor.title }}</li>
+                                {% if order.cake.inscription %}
+                                    <li>Надпись: {{ order.cake.inscription }}</li>
                                 {% else %}
                                     <li>Без надписи</li>
                                 {% endif %}
                             </ul>
-                            <span>Цена: {{ cake.price }}₽</span>
                         {% else %}
                             <span>Ваш торт:</span>
                             <ul>
@@ -41,10 +40,14 @@
                                     <li>Без надписи</li>
                                 {% endif %}
                             </ul>
-                            <span>Цена: {{ order.price }}₽</span>
+                            {% endif %}
+                        <span>Цена: {{ order.price }}₽</span>
+                        {% if order.comment %}
+                            <span>Комментарий к заказу: {{ order.comment }}</span>
                         {% endif %}
-                        <span>Комментарий к заказу: {{ order.comment }}</span>
-                        <span>Комментарий к курьеру: {{ order.delivery_comment }}</span>
+                        {% if order.delivery_comment %}
+                            <span>Комментарий к курьеру: {{ order.delivery_comment }}</span>
+                        {% endif %}
                     </div>
                 </div>
             </article>

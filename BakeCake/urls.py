@@ -3,7 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import show_main, show_lk, show_lk_order, cakes_catalog, cake_page, create_custom_cake_order
+from .views import show_main, show_lk, show_lk_order, cakes_catalog, \
+    cake_page, create_custom_cake_order, create_regular_cake_order
 
 
 urlpatterns = [
@@ -13,6 +14,11 @@ urlpatterns = [
     path('cake/<int:cake_id>', cake_page, name='cake_page'),
     path('lk/<int:client_id>', show_lk, name='show_lk'),
     path('lk-order', show_lk_order, name='show_lk-order'),
-    path('create_custom_cake_order', create_custom_cake_order, name='create_custom_cake_order'),
+    path('create_custom_cake_order',
+         create_custom_cake_order,
+         name='create_custom_cake_order'),
+    path('create_regular_cake_order/<int:cake_id>',
+         create_regular_cake_order,
+         name='create_regular_cake_order'),
     path('', include('accounts.urls', namespace='accounts')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

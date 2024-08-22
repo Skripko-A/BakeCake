@@ -8,26 +8,67 @@
             <div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center">
                 <img src="{{ image }}" style="max-height: 450px; max-width: 450px;" alt="" class="">
                 <span class="cake_blue mt-4 fw-lighter mb-4">{{ description }}</span><br>
-                <form action="/">
-                    <button class="btn text-white rounded-pill shadow-none cake__button cake__bg_pink">Заказать</button>
-                </form>
             </div>
             <div class="col-12 col-lg-4 d-flex">
                 <div class="cake__card p-4 position-relative cake_grey">
-                    <span class="cake__badge rounded-pill">?</span>
-                    <!-- <span>Количество уровней: {{ levels_number }}</span> -->
-                    <!-- <span>Форма: {{ shape }}</span> -->
                     <p>Топпинг: {{ topping }}</p>
-                    <!-- <span>Дополнительно:</span> -->
                     <ul>
                         <li>{{ berry }}</li>
                         <li>{{ decor }}</li>
                     </ul>
-                    <!-- <span>Надпись: {{ inscription }}</span> -->
-                    <p>{{ description }}</p>
+                    <p>Цена: {{ price }}₽</p>
                 </div>
             </div>
         </article>
+        <p></p>
+        <div class="col-6 col-lg-4 d-flex flex-column align-items-center">
+            <form method="post" action="{% url 'create_regular_cake_order' cake_id  %}" class="">
+                {% csrf_token %}
+                Имя:<br>
+                <input type="text" name="name" class="" placeholder="+7(999)999-99-99" required="" value="{{ user.first_name }}">
+                <br><br>
+                {% for error in errors.name %}
+                        <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+                Номер телефона:<br>
+                <input type="tel" name="phone" class="" placeholder="+7(999)999-99-99" required="" value="{{ user.phone_number }}">
+                <br><br>
+                {% for error in errors.phone %}
+                        <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+                Email:<br>
+                <input type="email" name="email" class="" placeholder="example@example.com" required="" value="{{ user.email }}">
+                <br><br>
+                {% for error in errors.email %}
+                        <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+                Адрес доставки: <br>
+                <input type="text" name="address" class="" placeholder="Адрес" required="" value="{{ user.address }}">
+                <br><br>
+                {% for error in errors.address %}
+                        <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+                Дата доставки:<br>
+                <input type="date" name="date" class="" placeholder="Дата доставки" required="">
+                <br><br>
+                {% for error in errors.date %}
+                        <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+                Время доставки:<br>
+                <input type="time" name="time" class="" placeholder="Время доставки" required="">
+                <br><br>
+                {% for error in errors.time %}
+                        <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+                Комментарий к заказу:<br>
+                <input type="text" name="comment" class="" placeholder="Комментарий к заказу">
+                <br><br>
+                Комментарий к курьеру:<br>
+                <input type="text" name="delivery_comment" class="" placeholder="Комментарий к курьеру">
+                <button type="submit" class="btn text-white w-100 rounded-pill mt-3 py-2 shadow-none cake__button fs_12 cake__bg_pink">Заказать</button>
+                
+            </form>
+        </div>
     </div>
 </main>
 {% endblock %}
