@@ -48,7 +48,7 @@ class Client(AbstractUser):
     )
 
     USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email']
 
     objects = ClientManager()
 
