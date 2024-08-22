@@ -96,15 +96,15 @@ def cakes_catalog(request):
 
 def cake_page(request, cake_id: int):
     requested_cake = Cake.objects\
-        .select_related('topping', 'berry', 'decor')\
+        .select_related('topping', 'berry', 'decor', 'shape', 'levels_number')\
         .get(id=cake_id)
 
     context = {
         'title': requested_cake.title,
         'image': requested_cake.image.url,
         'description': requested_cake.description,
-        'levels_number': requested_cake.levels_number,
-        'shape': requested_cake.get_shape_display,
+        'levels_number': requested_cake.levels_number.number,
+        'shape': requested_cake.shape.get_title_display,
         'topping': requested_cake.topping.title,
         'berry': requested_cake.berry.title,
         'decor': requested_cake.decor.title,
