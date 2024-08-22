@@ -13,7 +13,7 @@ class Topping(models.Model):
     def __str__(self):
         return f'{self.title}'
 
-class Berrie(models.Model):
+class Berry(models.Model):
     title = models.CharField(max_length=25, verbose_name='Название')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
@@ -39,7 +39,7 @@ class Cake(models.Model):
     shape = models.CharField(choices=shapes, max_length=25, verbose_name='Форма (круг, квадрат, прямоугольник')
     topping = models.ForeignKey(Topping, verbose_name='Топпинг', on_delete=models.SET_NULL,
                                 related_name='cakes', null=True, blank=True)
-    berry = models.ForeignKey(Berrie, verbose_name='Ягода', on_delete=models.SET_NULL,
+    berry = models.ForeignKey(Berry, verbose_name='Ягода', on_delete=models.SET_NULL,
                                related_name='cakes', null=True, blank=True)
     decor = models.ForeignKey(Decor, verbose_name='Декор', on_delete=models.SET_NULL,
                               related_name='cakes', null=True, blank=True)

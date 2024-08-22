@@ -3,7 +3,7 @@ from django.contrib.admin import ModelAdmin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import Topping, Berrie, Decor, Cake, Order
+from .models import Topping, Berry, Decor, Cake, Order
 
 
 @admin.register(Cake)
@@ -24,8 +24,8 @@ class ToppingAdmin(ModelAdmin):
     list_display = ('title',)
 
 
-@admin.register(Berrie)
-class BerrieAdmin(ModelAdmin):
+@admin.register(Berry)
+class BerryAdmin(ModelAdmin):
     list_display = ('title',)
 
 
