@@ -31,12 +31,10 @@ class Decor(models.Model):
 
 
 class Cake(models.Model):
-    shapes = {'ROUND': 'круг', 'SQUARE':'квадрат', 'RECTANGLE': 'прямоугольник'}
     title = models.CharField(max_length=25, verbose_name='Название')
     image = models.ImageField(upload_to='images/cakes', verbose_name='Картинка')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
     levels_number = models.PositiveIntegerField(verbose_name=' Количество уровней (1, 2, 3')
-    shape = models.CharField(choices=shapes, max_length=25, verbose_name='Форма (круг, квадрат, прямоугольник')
     topping = models.ForeignKey(Topping, verbose_name='Топпинг', on_delete=models.SET_NULL,
                                 related_name='cakes', null=True, blank=True)
     berry = models.ForeignKey(Berry, verbose_name='Ягода', on_delete=models.SET_NULL,
@@ -63,10 +61,17 @@ class Order(models.Model):
 
 
 class Shape(models.Model):
-    title = CharField(max_length=25, verbose_name='Форма')
+    shapes = {'ROUND': 'круг', 'SQUARE':'квадрат', 'RECTANGLE': 'прямоугольник'}
+    title = models.CharField(choices=shapes, max_length=25, verbose_name='Форма (круг, квадрат, прямоугольник')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
+
+    def __str__(self):
+        return f'{self.title}'
 
 
 class Layer(models.Model):
-    models.PositiveIntegerField(verbose_name=' Количество уровней (1, 2, 3')
+    number = models.PositiveIntegerField(verbose_name=' Количество уровней (1, 2, 3')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=100)
+
+    def __str__(self):
+        return f'{self.number}'
