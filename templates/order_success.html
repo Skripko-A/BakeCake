@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <main>
+        <div class="container mt-header">
+            <article class="row pt-header d-flex justify-content-center">
+                <h2 class="font_Gogh fs_40 cake_blue text-center mb-3">Заказ №{{ order.id }} успешно создан.</h2>
+                <div class="col-12 col-lg-4 d-flex">
+                    <div class="cake__card p-4 position-relative cake_grey">
+                        <span>Имя: {{ order.name }}</span>
+                        <span>Телефон: {{ order.phone }}</span>
+                        <span>Email: {{ order.email }}</span>
+                        <span>Адрес: {{ order.address }}</span>
+                        <p></p>
+                        <span>Торт: {{ cake.title }}</span>
+                        <ul>
+                            <li>Количество слоёв: {{ cake.levels_number.number }}</li>
+                            <li>Форма: {{ cake.shape.get_title_display }}</li>
+                            <li>Топпинг: {{ cake.topping.title }}</li>
+                            <li>Ягода: {{ cake.berry.title }}</li>
+                            <li>Декор: {{ cake.decor.title }}</li>
+                            {% if cake.inscription %}
+                                <li>Надпись: {{ cake.inscription }}</li>
+                            {% else %}
+                                <li>Без надписи</li>
+                            {% endif %}
+                        </ul>
+                        <span>Цена: {{ cake.price }}₽</span>
+                        <span>Комментарий к заказу: {{ order.comment }}</span>
+                        <span>Комментарий к курьеру: {{ order.delivery_comment }}</span>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+{% endblock %}

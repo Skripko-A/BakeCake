@@ -1,20 +1,13 @@
+from django.contrib.auth import get_user_model, login
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
-from .models import Cake, Topping, Decor, Berry, Layer, Shape
+
+from .models import Cake, Topping, Decor, Berry, Layer, Shape, Order
 
 
 def show_main(request):
-    all_toppings = Topping.objects.order_by('pk')
-    no_topping = all_toppings.get(title='Без топпинга')
-    toppings_with_price = all_toppings.exclude(id=no_topping.id)
-    toppings_for_index_page = [no_topping] + list(toppings_with_price)
-    serialized_toppings = [{
-        'id': topping_id,
-        'title': topping.title,
-        'price': topping.price
-    } for topping_id, topping in enumerate(toppings_for_index_page, 1)]
-
+    toppings = Topping.objects.order_by('pk')
     berries = Berry.objects.order_by('pk')
     decors = Decor.objects.order_by('pk')
     levels = Layer.objects.order_by('pk')
@@ -23,28 +16,27 @@ def show_main(request):
     context = {
         'levels': levels,
         'forms': forms,
-        'toppings': serialized_toppings,
+        'toppings': toppings,
         'berries': berries,
         'decors': decors,
         'js_costs': serialize_js_costs(
-            no_topping, serialized_toppings, berries, decors, levels, forms
+            toppings, berries, decors, levels, forms
         ),
         'js_data': serialize_js_data(
-            no_topping, serialized_toppings, berries, decors, levels, forms
+            toppings, berries, decors, levels, forms
         )
     }
-    print(context)
 
     return render(request, 'index.html', context)
 
 
-def serialize_js_data(no_topping, serialized_toppings, berries, decors, levels, forms):
+def serialize_js_data(toppings, berries, decors, levels, forms):
     not_chosen = ['не выбрано']
     not_present = ['нет']
 
     levels = not_chosen + [level.number for level in levels]
     forms = not_chosen + [shape.get_title_display() for shape in forms]
-    toppings = not_chosen + [topping['title'] for topping in serialized_toppings]
+    toppings = not_chosen + [topping.title for topping in toppings]
     berries = not_present + [berry.title for berry in berries]
     decors = not_present + [decor.title for decor in decors]
 
@@ -57,12 +49,12 @@ def serialize_js_data(no_topping, serialized_toppings, berries, decors, levels, 
     }
 
 
-def serialize_js_costs(no_topping, serialized_toppings, berries, decors, levels, forms):
+def serialize_js_costs(toppings, berries, decors, levels, forms):
     free = 0
 
     levels = [free] + [int(level.price) for level in levels]
     forms = [free] + [int(shape.price) for shape in forms]
-    toppings = [free] + [int(topping['price']) for topping in serialized_toppings]
+    toppings = [free] + [int(topping.price) for topping in toppings]
     berries = [free] + [int(berry.price) for berry in berries]
     decors = [free] + [int(decor.price) for decor in decors]
     return {
@@ -90,7 +82,7 @@ def show_lk_order(request):
 
 
 def cakes_catalog(request):
-    context = {'cakes': Cake.objects.all()}
+    context = {'cakes': Cake.objects.filter(is_public=True)}
     return render(request, 'cakes_catalog.html', context)
 
 
@@ -112,3 +104,96 @@ def cake_page(request, cake_id: int):
     }
 
     return render(request, 'cake_page.html', context)
+
+
+def create_custom_cake_order(request):
+    if request.method == 'POST':
+        name = request.POST.get('NAME')
+        email = request.POST.get('EMAIL')
+        phone_number = request.POST.get('PHONE')
+        address = request.POST.get('ADDRESS')
+
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            User = get_user_model()
+            if User.objects.filter(phone_number=phone_number):
+                user = User.objects.get(phone_number=phone_number)
+            elif User.objects.filter(email=email):
+                user = User.objects.get(email=email)
+            else:
+                user = User.objects.create_user(
+                    phone_number=phone_number,
+                    email=email,
+                    first_name=name,
+                    address=address
+                )
+
+            if user.is_active:
+                login(request, user)
+
+        total_price = 0
+
+        levels_number = Layer.objects.get(pk=request.POST.get('LEVELS')[0])
+        total_price += levels_number.price
+
+        shape = Shape.objects.get(pk=request.POST.get('FORM')[0])
+        total_price += shape.price
+
+        topping = Topping.objects.get(pk=request.POST.get('TOPPING')[0])
+        total_price += topping.price
+
+        berry_id = request.POST.get('BERRIES')
+        berry = Berry.objects.get(pk=berry_id[0]) if berry_id else None
+        if berry:
+            total_price += berry.price
+
+        decor_id = request.POST.get('DECOR')
+        decor = Decor.objects.get(pk=decor_id[0]) if decor_id else None
+        if decor:
+            total_price += decor.price
+
+        inscription = request.POST.get('WORDS')
+        if not inscription:
+            inscription = None
+        else:
+            total_price += 500
+
+        cake = Cake.objects.create(
+            title='Custom cake',
+            levels_number=levels_number,
+            shape=shape,
+            topping=topping,
+            berry=berry,
+            decor=decor,
+            inscription=inscription,
+            price=total_price
+        )
+
+        comment = request.POST.get('COMMENTS')
+        delivery_comment = request.POST.get('DELIVCOMMENTS')
+        delivery_date = request.POST.get('DATE')
+        delivery_time = request.POST.get('TIME')
+
+        order = Order.objects.create(
+            cake=cake,
+            customer=user,
+            name=name,
+            email=email,
+            phone=phone_number,
+            address=address,
+            date=delivery_date,
+            time=delivery_time,
+            comment=comment,
+            delivery_comment=delivery_comment
+        )
+
+        cake.title = f'Custom cake for order №{order.id}'
+        cake.save()
+
+        context = {
+            'cake': cake,
+            'order': order
+        }
+
+        return render(request, 'order_success.html', context)

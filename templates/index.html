@@ -149,7 +149,7 @@
 				</section>
 
 				<section class="row pt-header" id="step4" v-if="Designed">
-					<form class="d-none" method="POST" action="{% url 'show_main' %}">
+					<form class="d-none" method="POST" action="{% url 'create_custom_cake_order' %}">
 						{% csrf_token %}
 						{% for level in levels %}
 							<input v-model="Levels" value="{{ level.id }}" type="radio" name="LEVELS">
@@ -167,7 +167,7 @@
 							<input v-model="Berries" value="{{ berry.id }}" type="radio" name="BERRIES">
 						{% endfor %}
 						<br>
-						{% for decoration in decorations %}
+						{% for decoration in decors %}
 							<input v-model="Decor" value="{{ decoration.id }}" type="radio" name="DECOR">
 						{% endfor %}
 						<br>

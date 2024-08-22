@@ -8,6 +8,7 @@ from .models import Topping, Berry, Decor, Cake, Order, Layer, Shape
 
 @admin.register(Cake)
 class CakeAdmin(admin.ModelAdmin):
+    # list_display = ('title',)
     list_display = ('title', 'get_preview')
 
     def get_preview(self, obj):
