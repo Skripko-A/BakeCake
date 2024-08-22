@@ -21,14 +21,14 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Topping)
 class ToppingAdmin(ModelAdmin):
-    list_display = ('title',)
+    list_display = ('title', 'price')
 
 
 @admin.register(Berry)
 class BerryAdmin(ModelAdmin):
-    list_display = ('title',)
+    list_display = ('title', 'price')
 
 
 @admin.register(Decor)
 class DecorAdmin(ModelAdmin):
-    list_display = ('title',)
+    list_display = ('title', 'price')
