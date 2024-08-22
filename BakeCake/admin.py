@@ -3,7 +3,7 @@ from django.contrib.admin import ModelAdmin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import Topping, Berry, Decor, Cake, Order, Shape, Layer
+from .models import Topping, Berry, Decor, Cake, Order, Layer, Shape
 
 
 @admin.register(Cake)
@@ -37,9 +37,6 @@ class DecorAdmin(ModelAdmin):
 @admin.register(Shape)
 class ShapeAdmin(ModelAdmin):
     list_display = ('title', 'price')
-
-    def get_shape(self, obj):
-        return obj.get_title_display()
 
 
 @admin.register(Layer)

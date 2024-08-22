@@ -46,6 +46,12 @@ class Client(AbstractUser):
         unique=True,
         db_index=True
     )
+    address = models.TextField(
+        verbose_name='адрес',
+        db_index=True,
+        null=True,
+        blank=True
+    )
 
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['email']
