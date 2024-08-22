@@ -12,20 +12,37 @@
                         <span>Email: {{ order.email }}</span>
                         <span>Адрес: {{ order.address }}</span>
                         <p></p>
-                        <span>Торт: {{ cake.title }}</span>
-                        <ul>
-                            <li>Количество слоёв: {{ cake.levels_number.number }}</li>
-                            <li>Форма: {{ cake.shape.get_title_display }}</li>
-                            <li>Топпинг: {{ cake.topping.title }}</li>
-                            <li>Ягода: {{ cake.berry.title }}</li>
-                            <li>Декор: {{ cake.decor.title }}</li>
-                            {% if cake.inscription %}
-                                <li>Надпись: {{ cake.inscription }}</li>
-                            {% else %}
-                                <li>Без надписи</li>
-                            {% endif %}
-                        </ul>
-                        <span>Цена: {{ cake.price }}₽</span>
+                        {% if cake %}
+                            <span>Торт: {{ cake.title }}</span>
+                            <ul>
+                                <li>Количество слоёв: {{ cake.levels_number.number }}</li>
+                                <li>Форма: {{ cake.shape.get_title_display }}</li>
+                                <li>Топпинг: {{ cake.topping.title }}</li>
+                                <li>Ягода: {{ cake.berry.title }}</li>
+                                <li>Декор: {{ cake.decor.title }}</li>
+                                {% if cake.inscription %}
+                                    <li>Надпись: {{ cake.inscription }}</li>
+                                {% else %}
+                                    <li>Без надписи</li>
+                                {% endif %}
+                            </ul>
+                            <span>Цена: {{ cake.price }}₽</span>
+                        {% else %}
+                            <span>Ваш торт:</span>
+                            <ul>
+                                <li>Количество слоёв: {{ order.levels_number }}</li>
+                                <li>Форма: {{ order.shape.get_title_display }}</li>
+                                <li>Топпинг: {{ order.topping.title }}</li>
+                                <li>Ягода: {{ order.berry.title }}</li>
+                                <li>Декор: {{ order.decor.title }}</li>
+                                {% if order.inscription %}
+                                    <li>Надпись: {{ order.inscription }}</li>
+                                {% else %}
+                                    <li>Без надписи</li>
+                                {% endif %}
+                            </ul>
+                            <span>Цена: {{ order.price }}₽</span>
+                        {% endif %}
                         <span>Комментарий к заказу: {{ order.comment }}</span>
                         <span>Комментарий к курьеру: {{ order.delivery_comment }}</span>
                     </div>

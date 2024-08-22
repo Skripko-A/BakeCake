@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model, login
+from django.db import transaction
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
@@ -106,6 +107,7 @@ def cake_page(request, cake_id: int):
     return render(request, 'cake_page.html', context)
 
 
+@transaction.atomic()
 def create_custom_cake_order(request):
     if request.method == 'POST':
         name = request.POST.get('NAME')
@@ -131,6 +133,8 @@ def create_custom_cake_order(request):
 
             if user.is_active:
                 login(request, user)
+
+        # TODO: count order sum at Order model method when creating
 
         total_price = 0
 
@@ -159,8 +163,32 @@ def create_custom_cake_order(request):
         else:
             total_price += 500
 
-        cake = Cake.objects.create(
-            title='Custom cake',
+        # cake = Cake.objects.create(
+        #     title='Custom cake',
+        #     levels_number=levels_number,
+        #     shape=shape,
+        #     topping=topping,
+        #     berry=berry,
+        #     decor=decor,
+        #     inscription=inscription,
+        #     price=total_price
+        # )
+
+        comment = request.POST.get('COMMENTS')
+        delivery_comment = request.POST.get('DELIVCOMMENTS')
+        delivery_date = request.POST.get('DATE')
+        delivery_time = request.POST.get('TIME')
+
+        order = Order.objects.create(
+            customer=user,
+            name=name,
+            email=email,
+            phone=phone_number,
+            address=address,
+            date=delivery_date,
+            time=delivery_time,
+            comment=comment,
+            delivery_comment=delivery_comment,
             levels_number=levels_number,
             shape=shape,
             topping=topping,
@@ -170,29 +198,8 @@ def create_custom_cake_order(request):
             price=total_price
         )
 
-        comment = request.POST.get('COMMENTS')
-        delivery_comment = request.POST.get('DELIVCOMMENTS')
-        delivery_date = request.POST.get('DATE')
-        delivery_time = request.POST.get('TIME')
-
-        order = Order.objects.create(
-            cake=cake,
-            customer=user,
-            name=name,
-            email=email,
-            phone=phone_number,
-            address=address,
-            date=delivery_date,
-            time=delivery_time,
-            comment=comment,
-            delivery_comment=delivery_comment
-        )
-
-        cake.title = f'Custom cake for order №{order.id}'
-        cake.save()
-
         context = {
-            'cake': cake,
+            'cake': None,
             'order': order
         }
 
