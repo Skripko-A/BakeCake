@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
+
+from accounts.models import Client
 from .models import Cake, Topping, Decor, Berry, Layer, Shape
 
 
@@ -33,7 +35,7 @@ def show_main(request):
             no_topping, serialized_toppings, berries, decors, levels, forms
         )
     }
-    print(context)
+
 
     return render(request, 'index.html', context)
 
@@ -75,11 +77,9 @@ def serialize_js_costs(no_topping, serialized_toppings, berries, decors, levels,
     }
 
 
-def show_lk(request):
-    template = loader.get_template('lk.html')
-    context = {}
-    rendered_page = template.render(context, request)
-    return HttpResponse(rendered_page)
+def show_lk(request, client_id: int):
+    requested_client = Client.objects.get(id=client_id)
+    return render(request, 'lk.html', {"user":requested_client})
 
 
 def show_lk_order(request):
@@ -104,7 +104,7 @@ def cake_page(request, cake_id: int):
         'image': requested_cake.image.url,
         'description': requested_cake.description,
         'levels_number': requested_cake.levels_number,
-        'shape': requested_cake.get_shape_display,
+        'shape': requested_cake.shape.get_title_display,
         'topping': requested_cake.topping.title,
         'berry': requested_cake.berry.title,
         'decor': requested_cake.decor.title,
