@@ -1,30 +1,35 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
-from .models import Cake, Topping, Decor, Berry
+from .models import Cake, Topping, Decor, Berry, Layer, Shape
 
 def show_main(request):
+    layers = Layer.objects.all(),
+    shapes = Shape.objects.all(),
+    toppings = Topping.objects.all(),
+    berries = Berry.objects.all(),
+    decors = Decor.objects.all(),
     # TODO: Add db data
     context = {
-        'levels': [{'id': 1, 'amount': 1, 'price': 400}, {'id': 2, 'amount': 2, 'price': 750}, {'id': 3, 'amount': 3, 'price': 1100}],
-        'forms': [{'id': 1, 'title': 'Круг', 'price': 600}, {'id': 2, 'title': 'Квадрат', 'price': 400}, {'id': 3, 'title': 'Прямоугольник', 'price': 1000}],
-        'toppings': Topping.objects.all(),
-        'berries': Berry.objects.all(),
-        'decors': Decor.objects.all(),
+        'levels': layers,
+        'forms': shapes,
+        'toppings': toppings,
+        'berries': berries,
+        'decors': decors,
         'js_costs': {
-            'Levels': [0, 400, 750, 1100],
-            'Forms': [0, 600, 400, 1000],
-            'Toppings': [topping.price for topping in Topping.objects.all()],
-            'Berries': [berry.price for berry in Berry.objects.all()],
-            'Decors': [decor.price for decor in Decor.objects.all()],
+            'Levels': [layer.price for layer in layers],
+            'Forms': [shape.price for shape in shapes],
+            'Toppings': [topping.price for topping in toppings],
+            'Berries': [berry.price for berry in berries],
+            'Decors': [decor.price for decor in decors],
             'Words': 500
         },
         'js_data': {
-            'Levels': ['не выбрано', '1', '2', '3'],
-            'Forms': ['не выбрано', 'Круг', 'Квадрат', 'Прямоугольник'],
-            'Toppings': [topping.title for topping in Topping.objects.all()],
-            'Berries': [berry.title for berry in Berry.objects.all()],
-            'Decors': [decor.title for decor in Decor.objects.all()]
+            'Levels': [layer.number for layer in layers],
+            'Forms': [shape.title for shape in shapes],
+            'Toppings': [topping.title for topping in toppings],
+            'Berries': [berry.title for berry in berries],
+            'Decors': [decor.title for decor in decors]
         }
     }
     return render(request, 'index.html', context)
@@ -56,7 +61,7 @@ def cake_page(request, cake_id: int):
         'image': requested_cake.image.url,
         'description': requested_cake.description,
         'levels_number': requested_cake.levels_number,
-        'shape': requested_cake.get_shape_display,
+        'shape': requested_cake.shape.get_title_display,
         'topping': requested_cake.topping.title,
         'berry': requested_cake.berry.title,
         'decor': requested_cake.decor.title,
