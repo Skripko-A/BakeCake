@@ -3,31 +3,77 @@ from django.template import loader
 from django.shortcuts import render
 from .models import Cake, Topping, Decor, Berry
 
+
 def show_main(request):
-    # TODO: Add db data
+    all_toppings = Topping.objects.order_by('pk')
+    no_topping = all_toppings.get(title='Без топпинга')
+    toppings_with_price = all_toppings.exclude(id=no_topping.id)
+    toppings_for_index_page = [no_topping] + list(toppings_with_price)
+
+    berries = Berry.objects.order_by('pk')
+    decors = Decor.objects.order_by('pk')
+    forms = [{'id': shape_id, 'title': shape}
+             for shape_id, shape in enumerate(Cake.shapes.values(), 1)]
+
     context = {
-        'levels': [{'id': 1, 'amount': 1, 'price': 400}, {'id': 2, 'amount': 2, 'price': 750}, {'id': 3, 'amount': 3, 'price': 1100}],
-        'forms': [{'id': 1, 'title': 'Круг', 'price': 600}, {'id': 2, 'title': 'Квадрат', 'price': 400}, {'id': 3, 'title': 'Прямоугольник', 'price': 1000}],
-        'toppings': Topping.objects.all(),
-        'berries': Berry.objects.all(),
-        'decors': Decor.objects.all(),
-        'js_costs': {
-            'Levels': [0, 400, 750, 1100],
-            'Forms': [0, 600, 400, 1000],
-            'Toppings': [topping.price for topping in Topping.objects.all()],
-            'Berries': [berry.price for berry in Berry.objects.all()],
-            'Decors': [decor.price for decor in Decor.objects.all()],
-            'Words': 500
-        },
-        'js_data': {
-            'Levels': ['не выбрано', '1', '2', '3'],
-            'Forms': ['не выбрано', 'Круг', 'Квадрат', 'Прямоугольник'],
-            'Toppings': [topping.title for topping in Topping.objects.all()],
-            'Berries': [berry.title for berry in Berry.objects.all()],
-            'Decors': [decor.title for decor in Decor.objects.all()]
-        }
+        'levels': [
+            {'id': 1, 'amount': 1},
+            {'id': 2, 'amount': 2},
+            {'id': 3, 'amount': 3}
+        ],
+        'forms': forms,
+        'toppings': toppings_for_index_page,
+        'berries': berries,
+        'decors': decors,
+        'js_costs': serialize_js_costs(
+            no_topping, toppings_with_price, berries, decors
+        ),
+        'js_data': serialize_js_data(
+            no_topping, toppings_with_price, berries, decors
+        )
     }
+
     return render(request, 'index.html', context)
+
+
+def serialize_js_data(no_topping, toppings_with_price, berries, decors):
+    not_chosen = ['не выбрано']
+    not_present = ['нет']
+
+    levels = not_chosen + ['1', '2', '3']
+    forms = not_chosen + [shape for shape in Cake.shapes.values()]
+    toppings = not_chosen + [no_topping.title] + [
+        topping.title for topping in toppings_with_price
+    ]
+    berries = not_present + [berry.title for berry in berries]
+    decors = not_present + [decor.title for decor in decors]
+
+    return {
+        'Levels': levels,
+        'Forms': forms,
+        'Toppings': toppings,
+        'Berries': berries,
+        'Decors': decors
+    }
+
+
+def serialize_js_costs(no_topping, toppings_with_price, berries, decors):
+    free = 0
+
+    levels = [free] + [400, 750, 1100]
+    forms = [free] + [600, 400, 1000]
+    toppings = [free] + [int(no_topping.price)] \
+        + [int(topping.price) for topping in toppings_with_price]
+    berries = [free] + [int(berry.price) for berry in berries]
+    decors = [free] + [int(decor.price) for decor in decors]
+    return {
+        'Levels': levels,
+        'Forms': forms,
+        'Toppings': toppings,
+        'Berries': berries,
+        'Decors': decors,
+        'Words': 500
+    }
 
 
 def show_lk(request):
@@ -50,7 +96,10 @@ def cakes_catalog(request):
 
 
 def cake_page(request, cake_id: int):
-    requested_cake = Cake.objects.get(id=cake_id)
+    requested_cake = Cake.objects\
+        .select_related('topping', 'berry', 'decor')\
+        .get(id=cake_id)
+
     context = {
         'title': requested_cake.title,
         'image': requested_cake.image.url,
@@ -62,4 +111,5 @@ def cake_page(request, cake_id: int):
         'decor': requested_cake.decor.title,
         'inscription': requested_cake.inscription
     }
+
     return render(request, 'cake_page.html', context)
