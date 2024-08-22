@@ -83,7 +83,7 @@ def show_lk_order(request):
 
 
 def cakes_catalog(request):
-    context = {'cakes': Cake.objects.filter(is_public=True)}
+    context = {'cakes': Cake.objects.all()}
     return render(request, 'cakes_catalog.html', context)
 
 
