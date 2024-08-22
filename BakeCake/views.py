@@ -187,9 +187,6 @@ def get_ordering_user(request, name, email, phone_number, address):
                 address=address
             )
 
-        if user.is_active:
-            login(request, user)
-
     return user
 
 
