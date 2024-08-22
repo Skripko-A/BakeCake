@@ -7,6 +7,7 @@ from django.shortcuts import render
 from accounts.models import Client
 
 from .models import Cake, Topping, Decor, Berry, Layer, Shape, Order
+from .forms import OrderRegularCakeForm
 
 
 def show_main(request):
@@ -72,7 +73,7 @@ def serialize_js_costs(toppings, berries, decors, levels, forms):
 
 def show_lk(request, client_id: int):
     requested_client = Client.objects.get(id=client_id)
-    return render(request, 'lk.html', {"user":requested_client})
+    return render(request, 'lk.html', {"user": requested_client})
 
 
 def show_lk_order(request):
@@ -87,12 +88,18 @@ def cakes_catalog(request):
     return render(request, 'cakes_catalog.html', context)
 
 
-def cake_page(request, cake_id: int):
+def cake_page(request, cake_id: int, errors=None):
     requested_cake = Cake.objects\
         .select_related('topping', 'berry', 'decor', 'shape', 'levels_number')\
         .get(id=cake_id)
 
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        user = None
+
     context = {
+        'cake_id': cake_id,
         'title': requested_cake.title,
         'image': requested_cake.image.url,
         'description': requested_cake.description,
@@ -101,10 +108,89 @@ def cake_page(request, cake_id: int):
         'topping': requested_cake.topping.title,
         'berry': requested_cake.berry.title,
         'decor': requested_cake.decor.title,
-        'inscription': requested_cake.inscription
+        'inscription': requested_cake.inscription,
+        'price': requested_cake.price,
+        'user': user,
+        'errors': errors
     }
 
     return render(request, 'cake_page.html', context)
+
+
+@transaction.atomic()
+def create_regular_cake_order(request, cake_id: int):
+    if request.method == 'POST':
+        form = OrderRegularCakeForm(request.POST)
+        if not form.is_valid():
+            return cake_page(request, cake_id, form.errors)
+        order_data = form.cleaned_data
+
+        name = order_data['name']
+        email = order_data['email']
+        phone_number = order_data['phone']
+        address = order_data['address']
+
+        user = get_ordering_user(request, name, email, phone_number, address)
+
+        if not user.address:
+            User = get_user_model()
+            User.objects.filter(pk=user.id).update(address=address)
+
+        comment = order_data['comment']
+        delivery_comment = order_data['delivery_comment']
+        delivery_date = order_data['date']
+        delivery_time = order_data['time']
+
+        cake = Cake.objects\
+            .select_related('levels_number',
+                            'topping',
+                            'shape',
+                            'berry',
+                            'decor')\
+            .get(pk=cake_id)
+
+        order = Order.objects.create(
+            customer=user,
+            name=name,
+            email=email,
+            phone=phone_number,
+            address=address,
+            date=delivery_date,
+            time=delivery_time,
+            comment=comment,
+            delivery_comment=delivery_comment,
+            price=cake.price,
+            cake=cake
+        )
+
+        context = {
+            'order': order
+        }
+
+        return render(request, 'order_success.html', context)
+
+
+def get_ordering_user(request, name, email, phone_number, address):
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        User = get_user_model()
+        if User.objects.filter(phone_number=phone_number):
+            user = User.objects.get(phone_number=phone_number)
+        elif User.objects.filter(email=email):
+            user = User.objects.get(email=email)
+        else:
+            user = User.objects.create_user(
+                phone_number=phone_number,
+                email=email,
+                first_name=name,
+                address=address
+            )
+
+        if user.is_active:
+            login(request, user)
+
+    return user
 
 
 @transaction.atomic()
@@ -115,24 +201,11 @@ def create_custom_cake_order(request):
         phone_number = request.POST.get('PHONE')
         address = request.POST.get('ADDRESS')
 
-        if request.user.is_authenticated:
-            user = request.user
-        else:
-            User = get_user_model()
-            if User.objects.filter(phone_number=phone_number):
-                user = User.objects.get(phone_number=phone_number)
-            elif User.objects.filter(email=email):
-                user = User.objects.get(email=email)
-            else:
-                user = User.objects.create_user(
-                    phone_number=phone_number,
-                    email=email,
-                    first_name=name,
-                    address=address
-                )
+        user = get_ordering_user(request, name, email, phone_number, address)
 
-            if user.is_active:
-                login(request, user)
+        if not user.address:
+            User = get_user_model()
+            User.objects.filter(pk=user.id).update(address=address)
 
         # TODO: count order sum at Order model method when creating
 
@@ -163,17 +236,6 @@ def create_custom_cake_order(request):
         else:
             total_price += 500
 
-        # cake = Cake.objects.create(
-        #     title='Custom cake',
-        #     levels_number=levels_number,
-        #     shape=shape,
-        #     topping=topping,
-        #     berry=berry,
-        #     decor=decor,
-        #     inscription=inscription,
-        #     price=total_price
-        # )
-
         comment = request.POST.get('COMMENTS')
         delivery_comment = request.POST.get('DELIVCOMMENTS')
         delivery_date = request.POST.get('DATE')
@@ -199,7 +261,6 @@ def create_custom_cake_order(request):
         )
 
         context = {
-            'cake': None,
             'order': order
         }
 
