@@ -112,7 +112,7 @@ Vue.createApp({
             Name: userData.name || '',
             Phone: userData.phone || '',
             Email: userData.email || '',
-            Address: null,
+            Address: userData.address || '',
             Dates: null,
             Time: null,
             DelivComments: ''

@@ -26,27 +26,29 @@
 
 				<div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center">
 					<div class="card border-0 cake__hover">
-						<a href="#" class="card-img-overlay"></a>
+						<a href="{% url 'cakes_catalog' %}" class="card-img-overlay"></a>
 						<img src="{% static 'img/image1.png' %}" alt="" class="">
 						<span class="cake_blue mt-4 fw-lighter mb-4 text-center">На чаепитие</span>
 					</div>
 				</div>
 				<div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center">
 					<div class="card border-0 cake__hover">
-						<a href="#" class="card-img-overlay"></a>
+						<a href="{% url 'cakes_catalog' %}" class="card-img-overlay"></a>
 						<img src="{% static 'img/image2.png' %}" alt="" class="">
 						<span class="cake_blue mt-4 fw-lighter mb-4 text-center">На день рождения</span>
 					</div>
 				</div>
 				<div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center">
 					<div class="card border-0 cake__hover">
-						<a href="#" class="card-img-overlay"></a>
+						<a href="{% url 'cakes_catalog' %}" class="card-img-overlay"></a>
 						<img src="{% static 'img/image3.png' %}" alt="" class="">
 						<span class="cake_blue mt-4 fw-lighter mb-4 text-center">На свадьбу</span>
 					</div>
 				</div>
 				<div class="d-flex justify-content-center mt-2">
-					<button class="btn text-white rounded-pill shadow-none cake__button cake__bg_pink">Открыть каталог</button>
+					<form method="GET" action="{% url 'cakes_catalog' %}">
+						<button class="btn text-white rounded-pill shadow-none cake__button cake__bg_pink">Открыть каталог</button>
+					</form>
 				</div>
 			</article>
 
@@ -94,7 +96,7 @@
 							<span class="me-3 fs_40 cake_blue">Количество уровней</span>
 							{% for level in levels %}
 								<v-field v-model="Levels" type="radio" name="lvls" id="num{{ level.id }}" value="{{ level.id }}" class="d-none cake__input"></v-field>
-								<label for="num{{ level.id }}" class="mx-2 px-3 py-1 cake_grey cake__label">{{ level.amount }}</label>
+								<label for="num{{ level.id }}" class="mx-2 px-3 py-1 cake_grey cake__label">{{ level.number }}</label>
 							{% endfor %}
 						</div>
 
@@ -102,7 +104,7 @@
 							<span class="me-3 fs_40 cake_blue">Форма</span>
 							{% for form in forms %}
 								<v-field v-model="Form" type="radio" name="form" id="form{{ form.id }}" value="{{ form.id }}" class="d-none cake__input"></v-field>
-								<label for="form{{ form.id }}" class="mx-2 px-3 py-1 cake_grey cake__label">{{ form.title }}</label>
+								<label for="form{{ form.id }}" class="mx-2 px-3 py-1 cake_grey cake__label">{{ form.get_title_display }}</label>
 							{% endfor %}
 						</div>
 						<div class="d-flex align-items-center flex-wrap mb-3">
@@ -277,6 +279,7 @@
 			name: "{{ request.user.first_name }}",
 			email: "{{ request.user.email }}",
 			phone: "{{ request.user.phone_number }}",
+			address: "{{ request.user.address }}"
     };
     </script>
 {% endblock %}

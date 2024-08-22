@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render
-from .models import Cake, Topping, Decor, Berry
+from .models import Cake, Topping, Decor, Berry, Layer, Shape
 
 
 def show_main(request):
@@ -9,42 +9,42 @@ def show_main(request):
     no_topping = all_toppings.get(title='Без топпинга')
     toppings_with_price = all_toppings.exclude(id=no_topping.id)
     toppings_for_index_page = [no_topping] + list(toppings_with_price)
+    serialized_toppings = [{
+        'id': topping_id,
+        'title': topping.title,
+        'price': topping.price
+    } for topping_id, topping in enumerate(toppings_for_index_page, 1)]
 
     berries = Berry.objects.order_by('pk')
     decors = Decor.objects.order_by('pk')
-    forms = [{'id': shape_id, 'title': shape}
-             for shape_id, shape in enumerate(Cake.shapes.values(), 1)]
+    levels = Layer.objects.order_by('pk')
+    forms = Shape.objects.order_by('pk')
 
     context = {
-        'levels': [
-            {'id': 1, 'amount': 1},
-            {'id': 2, 'amount': 2},
-            {'id': 3, 'amount': 3}
-        ],
+        'levels': levels,
         'forms': forms,
-        'toppings': toppings_for_index_page,
+        'toppings': serialized_toppings,
         'berries': berries,
         'decors': decors,
         'js_costs': serialize_js_costs(
-            no_topping, toppings_with_price, berries, decors
+            no_topping, serialized_toppings, berries, decors, levels, forms
         ),
         'js_data': serialize_js_data(
-            no_topping, toppings_with_price, berries, decors
+            no_topping, serialized_toppings, berries, decors, levels, forms
         )
     }
+    print(context)
 
     return render(request, 'index.html', context)
 
 
-def serialize_js_data(no_topping, toppings_with_price, berries, decors):
+def serialize_js_data(no_topping, serialized_toppings, berries, decors, levels, forms):
     not_chosen = ['не выбрано']
     not_present = ['нет']
 
-    levels = not_chosen + ['1', '2', '3']
-    forms = not_chosen + [shape for shape in Cake.shapes.values()]
-    toppings = not_chosen + [no_topping.title] + [
-        topping.title for topping in toppings_with_price
-    ]
+    levels = not_chosen + [level.number for level in levels]
+    forms = not_chosen + [shape.get_title_display() for shape in forms]
+    toppings = not_chosen + [topping['title'] for topping in serialized_toppings]
     berries = not_present + [berry.title for berry in berries]
     decors = not_present + [decor.title for decor in decors]
 
@@ -57,13 +57,12 @@ def serialize_js_data(no_topping, toppings_with_price, berries, decors):
     }
 
 
-def serialize_js_costs(no_topping, toppings_with_price, berries, decors):
+def serialize_js_costs(no_topping, serialized_toppings, berries, decors, levels, forms):
     free = 0
 
-    levels = [free] + [400, 750, 1100]
-    forms = [free] + [600, 400, 1000]
-    toppings = [free] + [int(no_topping.price)] \
-        + [int(topping.price) for topping in toppings_with_price]
+    levels = [free] + [int(level.price) for level in levels]
+    forms = [free] + [int(shape.price) for shape in forms]
+    toppings = [free] + [int(topping['price']) for topping in serialized_toppings]
     berries = [free] + [int(berry.price) for berry in berries]
     decors = [free] + [int(decor.price) for decor in decors]
     return {
