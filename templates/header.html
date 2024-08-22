@@ -38,7 +38,7 @@
                             <span class="position-absolute translate-middle badge rounded-pill cake__bg_pink fs_8 d-none">1</span>
                         </a>
                     {% else %}
-                        <a class="nav-link fw-lighter cake_grey fs_12" href="{% url 'show_lk' %}">
+                        <a class="nav-link fw-lighter cake_grey fs_12" href="{% url 'show_lk' request.user.id %}">
                             {{request.user}}
                         </a>
                     {% endif %}
