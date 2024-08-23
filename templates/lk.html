@@ -57,7 +57,7 @@
 					</div>
 				</v-form>
 				<h2 class="fs_40 cake_pink mt-5">Мои заказы</h2>
-				{% if request.user.orders.all %}
+				{% if request.user.orders.first.cake %}
 				  {% for order in request.user.orders.all %}
 					<h4>{{ order.cake }} Цена {{order.cake.price}} р.</h4>
 				  {% endfor %}
