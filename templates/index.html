@@ -53,6 +53,7 @@
 			</article>
 
 			<article class="row pt-header text-center d-flex justify-content-center">
+				<section class="row pt-header" id="step4">
 				<h2 class="font_Gogh fs_40 cake_blue text-center mb-5">Оплата и доставка</h2>
 				<div class="col-12 col-sm-6 col-lg-4 d-flex flex-column align-items-center">
 					<div class="d-flex align-items-center" style="height: 120px">
@@ -148,7 +149,7 @@
 					</v-form>
 				</section>
 
-				<section class="row pt-header" id="step4" v-if="Designed">
+				<section class="row pt-header" v-if="Designed">
 					<form class="d-none" method="POST" action="{% url 'create_custom_cake_order' %}">
 						{% csrf_token %}
 						{% for level in levels %}
