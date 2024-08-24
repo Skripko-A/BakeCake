@@ -5,21 +5,25 @@
         <div class="container mt-header">
             <article class="row pt-header d-flex justify-content-center">
                 <h2 class="font_Gogh fs_40 cake_blue text-center mb-3">Заказ №{{ order.id }} успешно создан.</h2>
-                <div class="col-12 col-lg-4 d-flex">
-                    <div class="cake__card p-4 position-relative cake_grey">
+                <div class="col-12 col-lg-4 d-flex justify-content-center">
+                    <div class="cake__card1 p-4 position-relative cake_grey">
                         <span>Имя: {{ order.name }}</span>
                         <span>Телефон: {{ order.phone }}</span>
                         <span>Email: {{ order.email }}</span>
                         <span>Адрес: {{ order.address }}</span>
                         <p></p>
                         {% if order.cake %}
-                            <span>Торт: {{ order.cake.title }}</span>
+                            <span>Торт: {{ order.cake.title }} ({{ order.cake.price }}₽)</span>
                             <ul>
                                 <li>Количество слоёв: {{ order.cake.levels_number.number }}</li>
                                 <li>Форма: {{ order.cake.shape.get_title_display }}</li>
                                 <li>Топпинг: {{ order.cake.topping.title }}</li>
-                                <li>Ягода: {{ order.cake.berry.title }}</li>
-                                <li>Декор: {{ order.cake.decor.title }}</li>
+                                {% if order.cake.berry %}
+                                    <li>Ягода: {{ order.cake.berry.title }}</li>
+                                {% endif %}
+                                {% if order.cake.decor %}
+                                    <li>Декор: {{ order.cake.decor.title }}</li>
+                                {% endif %}
                                 {% if order.cake.inscription %}
                                     <li>Надпись: {{ order.cake.inscription }}</li>
                                 {% else %}
@@ -29,22 +33,33 @@
                         {% else %}
                             <span>Ваш торт:</span>
                             <ul>
-                                <li>Количество слоёв: {{ order.levels_number }}</li>
-                                <li>Форма: {{ order.shape.get_title_display }}</li>
-                                <li>Топпинг: {{ order.topping.title }}</li>
-                                <li>Ягода: {{ order.berry.title }}</li>
-                                <li>Декор: {{ order.decor.title }}</li>
+                                <li>Количество слоёв: {{ order.levels_number.number }} ({{ order.levels_number.price }}₽)</li>
+                                <li>Форма: {{ order.shape.get_title_display }} ({{ order.shape.price }}₽)</li>
+                                <li>Топпинг: {{ order.topping.title }} ({{ order.topping.price }}₽)</li>
+                                {% if order.berry %}
+                                    <li>Ягода: {{ order.berry.title }} ({{ order.berry.price }}₽)</li>
+                                {% endif %}
+                                {% if order.decor %}
+                                    <li>Декор: {{ order.decor.title }} ({{ order.decor.price }}₽)</li>
+                                {% endif %}
                                 {% if order.inscription %}
-                                    <li>Надпись: {{ order.inscription }}</li>
+                                    <li>Надпись: {{ order.inscription }} (500₽)</li>
                                 {% else %}
                                     <li>Без надписи</li>
                                 {% endif %}
                             </ul>
                             {% endif %}
-                        <span>Цена: {{ order.price }}₽</span>
+                        {% if plus_20 %}
+                            <span>Надбавка за срочность: {{ plus_20|floatformat:2 }}₽</span>
+                        {% endif %}
+                        <p></p>
+                        <span>Цена: {{ order.price|floatformat:2 }}₽</span>
                         {% if order.comment %}
                             <span>Комментарий к заказу: {{ order.comment }}</span>
                         {% endif %}
+                        <p></p>
+                        <span>Дата доставки: {{ order.date }}</span>
+                        <span>Время доставки: {{ order.time }}</span>
                         {% if order.delivery_comment %}
                             <span>Комментарий к курьеру: {{ order.delivery_comment }}</span>
                         {% endif %}
