@@ -106,7 +106,7 @@ def cake_page(request, cake_id: int, errors=None):
         'title': requested_cake.title,
         'image': requested_cake.image.url,
         'description': requested_cake.description,
-        'levels_number': requested_cake.levels_number,
+        'levels_number': requested_cake.levels_number.number,
         'shape': requested_cake.shape.get_title_display,
         'topping': requested_cake.topping.title,
         'berry': requested_cake.berry.title,

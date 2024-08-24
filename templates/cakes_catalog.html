@@ -10,7 +10,7 @@
                         <div class="card border-0 cake__hover">
                             <a href="{% url 'cake_page' cake.id %}" class="card-img-overlay"></a>
                             <img src="{{ cake.image.url}}" style="max-height: 200px; max-width: 300px;"  alt="" class="">
-                            <span class="cake_blue mt-4 fw-lighter mb-4 text-center">{{cake.title}}</span>
+                            <span class="cake_blue mt-4 fw-lighter mb-4 text-center">{{cake.title}}<br>{{ cake.price }}₽</span>
                         </div>
                     </div>
                 {% endfor %}
