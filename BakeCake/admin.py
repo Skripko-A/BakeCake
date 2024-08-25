@@ -1,19 +1,22 @@
 import logging
+from urllib.parse import urlparse
 
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.utils.html import format_html
+from environs import Env
 import requests
 
 from .models import Topping, Berry, Decor, Cake, Order, Layer, Shape, ReferalLink
 
-
-BITLY_ACCESS_TOKEN = '8bcc2d5f4de46a50c78db56704093ce7c41f643c'
+env = Env()
+env.read_env()
 
 logger = logging.getLogger('ReferalLinkAdmin')
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler('bitly_errors.log')
-handler.setLevel(logging.ERROR)
+handler = logging.FileHandler('short_links_errors.log')
+handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -62,29 +65,23 @@ class ReferalLinkAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         queryset = self.get_queryset(request)
-        headers = {
-            'Authorization': f'Bearer {BITLY_ACCESS_TOKEN}',
-        }
+        ISHORTN_TOKEN = settings.ISHORTN_TOKEN
+        headers = {'x-api-key': ISHORTN_TOKEN}
         for obj in queryset:
             try:
-                bitly_link = obj.link
-                if bitly_link.startswith('http'):
-                    bitly_link_id = bitly_link.replace('https://', '').replace('http://', '').replace('/', '')
-                else:
-                    bitly_link_id = bitly_link
-
-                bitly_url = f'https://api-ssl.bitly.com/v4/bitlinks/{bitly_link_id}/clicks/summary'
-
-                response = requests.get(bitly_url, headers=headers)
+                parsed_url = urlparse(obj.link)
+                logger.info(parsed_url)
+                short_link_alias = parsed_url.path
+                url = f'https://ishortn.ink/api/v1/analytics{short_link_alias}'
+                logger.info(f'Fetching analytics for URL: {url}')
+                response = requests.get(url, headers=headers)
                 if response.status_code == 200:
-                    data = response.json()
-                    obj.visits = data.get('total_clicks', 0)
+                    obj.visits = sum(response.json().get('clicksPerOS', {}).values())
                     obj.save()
-                    logger.info(f'Successfully updated visits for {bitly_link}')
+                    logger.info(f'Successfully updated visits for {obj.link}')
                 else:
-                    logger.error(f"Ошибка получения данных по ссылке {bitly_link_id}: {response.status_code}")
-                    logger.error(response.json())
+                    logger.error(f'Error fetching clicks info for link: {response.status_code} - {response.text}')
             except Exception as e:
-                logger.error(f"Исключение при обработке ссылки {bitly_link}: {e}")
-
+                logger.error(f'Exception occurred: {e}')
         return super().changelist_view(request, extra_context)
+
