@@ -57,8 +57,27 @@
 					</div>
 				</v-form>
 				<h2 class="fs_40 cake_pink mt-5">Мои заказы</h2>
-				<span class="cake_grey">У вас еще нет заказов.</span>
-				<p class="cake_grey">Вы можете добавить торт из <a href=".{% url 'show_main' %}#step2" class="text-decoration-none cake_pink">Каталога</a> или <a href="{% url 'show_main' %}#step3" class="text-decoration-none cake_pink">Создать свой</a>.</p>
+				{% if request.user.orders.all %}
+				  {% for order in request.user.orders.all %}
+				    {% if order.cake %}
+				      <h4>{{ order.cake }} Цена: {{ order.cake.price }} р.</h4>
+				    {% elif order.shape %}
+				      <h4>{{ order.levels_number }} слой, {{ order.shape.get_title_display }},
+				      		{{ order.topping }}, {{ order.berry }}, {{ order.decor }}</h4>
+						{% if order.inscription %}:
+							<h4>Надпись: {{ order.inscription }}</h4>
+						{% else %}
+							<h4>Без надписи</h4>
+						{% endif %}
+					  <h4>Цена: {{ order.price }}</h4>
+				    {% endif %}
+				  {% endfor %}
+				{% else %}
+  <div class="no-orders text-center">
+    <p class="fs_20 mb-3">У вас пока нет заказов.</p>
+  </div>
+{% endif %}
+				<p class="cake_grey">Вы можете добавить торт из <a href="{% url 'cakes_catalog' %}" class="text-decoration-none cake_pink">Каталога</a> или <a href="{% url 'show_main' %}#step3" class="text-decoration-none cake_pink">Создать свой</a>.</p>
 				<span class="cake_grey">Есть вопросы?</span>
 				<span class="cake_grey">Воспользуйтесь нашим <a href="https://vk.com/devmanorg" class="text-decoration-none cake_pink">чат-ботом</a>.</span>
 				<form method="post" action="{% url 'accounts:logout' %}">

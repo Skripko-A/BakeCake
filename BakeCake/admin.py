@@ -1,10 +1,25 @@
+import logging
+
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from environs import Env
 
-from .models import Topping, Berrie, Decor, Cake, Order
+import requests
+from setuptools.command.alias import alias
 
+from .models import Topping, Berry, Decor, Cake, Order, Layer, Shape, ReferalLink
+
+env = Env()
+env.read_env()
+
+logger = logging.getLogger('ReferalLinkAdmin')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('bitly_errors.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 @admin.register(Cake)
 class CakeAdmin(admin.ModelAdmin):
@@ -21,14 +36,47 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Topping)
 class ToppingAdmin(ModelAdmin):
-    list_display = ('title',)
+    list_display = ('title', 'price')
 
 
-@admin.register(Berrie)
-class BerrieAdmin(ModelAdmin):
-    list_display = ('title',)
+@admin.register(Berry)
+class BerryAdmin(ModelAdmin):
+    list_display = ('title', 'price')
 
 
 @admin.register(Decor)
 class DecorAdmin(ModelAdmin):
-    list_display = ('title',)
+    list_display = ('title', 'price')
+
+
+@admin.register(Shape)
+class ShapeAdmin(ModelAdmin):
+    list_display = ('title', 'price')
+
+
+@admin.register(Layer)
+class LayerAdmin(ModelAdmin):
+    list_display = ('number', 'price')
+
+
+@admin.register(ReferalLink)
+class ReferalLinkAdmin(admin.ModelAdmin):
+    list_display = ('link', 'visits')
+    def changelist_view(self, request, extra_context=None):
+        queryset = self.get_queryset(request)
+        ISHORTN_TOKEN = env.str('ISHORTN_TOKEN')
+        headers = {'x-api-key': ISHORTN_TOKEN}
+        for obj in queryset:
+            try:
+                alias = obj.link.split('/')[3]
+                url = f'https://ishortn.ink/api/v1/analytics/{alias}'
+                response = requests.get(url, headers=headers)
+                if response.status_code == 200:
+                    obj.visits = sum(response.json()['clicksPerOS'].values())
+                    obj.save()
+                    logger.info(f'Successfully updated visits for {obj.link} ')
+                else:
+                    logger.error(f"Ошибка получения данных по ссылке : {response.status_code}")
+            except Exception as e:
+                logger.error(e)
+        return super().changelist_view(request, extra_context)
