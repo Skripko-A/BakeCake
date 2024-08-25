@@ -6,7 +6,7 @@ from django.shortcuts import render
 
 from accounts.models import Client
 
-from .models import Cake, Topping, Decor, Berry, Layer, Shape, Order
+from .models import Cake, Topping, Decor, Berry, Layer, Shape, Order, PromoCode
 from .forms import OrderRegularCakeForm
 
 
@@ -148,6 +148,16 @@ def create_regular_cake_order(request, cake_id: int):
                             'berry',
                             'decor')\
             .get(pk=cake_id)
+        promo_code_value = order_data.get('promo_code')
+        discount_amount = 0
+        if promo_code_value:
+            promo_code = PromoCode.objects.filter(code=promo_code_value).first()
+            if promo_code and promo_code.is_valid():
+                discount_amount = (cake.price * promo_code.discount) / 100
+                promo_code.usage_count += 1
+                promo_code.save()
+
+        final_price = cake.price - discount_amount
 
         order = Order.objects.create(
             customer=user,
@@ -159,8 +169,9 @@ def create_regular_cake_order(request, cake_id: int):
             time=delivery_time,
             comment=comment,
             delivery_comment=delivery_comment,
-            price=cake.price,
-            cake=cake
+            price=final_price,
+            cake=cake,
+            promo_code=promo_code  # добавляем промокод в заказ
         )
 
         context = {

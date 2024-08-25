@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from environs import Env
 import requests
 
-from .models import Topping, Berry, Decor, Cake, Order, Layer, Shape, ReferalLink
+from .models import Topping, Berry, Decor, Cake, Order, Layer, Shape, ReferalLink, PromoCode
 
 env = Env()
 env.read_env()
@@ -85,3 +85,7 @@ class ReferalLinkAdmin(admin.ModelAdmin):
                 logger.error(f'Exception occurred: {e}')
         return super().changelist_view(request, extra_context)
 
+
+@admin.register(PromoCode)
+class PromoCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount')

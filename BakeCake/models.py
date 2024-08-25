@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import ForeignKey, SET_NULL, PROTECT, CharField, DecimalField
+from django.db.models import ForeignKey, SET_NULL, PROTECT, CharField, DecimalField, PositiveIntegerField
 from phonenumber_field.modelfields import PhoneNumberField
 
 from accounts.models import Client
@@ -71,6 +71,27 @@ class Cake(models.Model):
         return f'{self.title}'
 
 
+from django.db import models
+from django.utils import timezone
+
+
+class PromoCode(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount = PositiveIntegerField(default=0)  # Скидка в процентах
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField()
+    active = models.BooleanField(default=True)
+    max_usage = models.IntegerField(null=True, blank=True)
+    usage_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.code
+
+    def is_valid(self):
+        now = timezone.now()
+        return self.active and self.start_date <= now <= self.end_date and (self.max_usage is None or self.usage_count < self.max_usage)
+
+
 class Order(models.Model):
     cake = ForeignKey(Cake, verbose_name='Торт', on_delete=PROTECT, related_name='orders',
                       null=True, blank=True)
@@ -95,10 +116,25 @@ class Order(models.Model):
     decor = models.ForeignKey(Decor, verbose_name='Декор', on_delete=models.SET_NULL,
                               related_name='orders', null=True, blank=True)
     inscription = models.CharField(max_length=25, verbose_name='Надпись', blank=True, null=True)
+    promo_code = models.ForeignKey(PromoCode, null=True, blank=True,
+                                               on_delete=models.SET_NULL, related_name='orders')
     price = models.DecimalField(max_digits=10, decimal_places=2)
-
     comment = models.TextField(null=True, blank=True, verbose_name='Комментарий к заказу')
     delivery_comment = models.TextField(null=True, blank=True, verbose_name='Комментарий к курьеру')
+
+    def apply_promo_code(self):
+        if self.promo_code and self.promo_code.is_valid():
+            if self.promo_code.discount:
+                discount = (self.price * self.promo_code.discount) / 100
+            else:
+                discount = self.promo_code.discount
+            self.total_amount -= discount
+            self.promo_code.usage_count += 1
+            self.promo_code.save()
+            self.save()
+
+    def __str__(self):
+        return f"Order {self.id} by {self.customer}"
 
     def __str__(self):
         return f'{self.customer}, заказ №{self.id}'
