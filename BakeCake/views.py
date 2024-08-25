@@ -1,4 +1,7 @@
-from django.contrib.auth import get_user_model, login
+from datetime import date, timedelta, datetime
+from decimal import Decimal
+
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.http import HttpResponse
 from django.template import loader
@@ -103,7 +106,7 @@ def cake_page(request, cake_id: int, errors=None):
         'title': requested_cake.title,
         'image': requested_cake.image.url,
         'description': requested_cake.description,
-        'levels_number': requested_cake.levels_number,
+        'levels_number': requested_cake.levels_number.number,
         'shape': requested_cake.shape.get_title_display,
         'topping': requested_cake.topping.title,
         'berry': requested_cake.berry.title,
@@ -149,6 +152,14 @@ def create_regular_cake_order(request, cake_id: int):
                             'decor')\
             .get(pk=cake_id)
 
+        total_price = cake.price
+        plus_20 = None
+        days_before_delivery = delivery_date - date.today()
+
+        if not days_before_delivery >= timedelta(hours=24):
+            plus_20 = total_price * Decimal(0.2)
+            total_price += plus_20
+
         order = Order.objects.create(
             customer=user,
             name=name,
@@ -159,12 +170,13 @@ def create_regular_cake_order(request, cake_id: int):
             time=delivery_time,
             comment=comment,
             delivery_comment=delivery_comment,
-            price=cake.price,
-            cake=cake
+            price=total_price,
+            cake=cake,
         )
 
         context = {
-            'order': order
+            'order': order,
+            'plus_20': plus_20
         }
 
         return render(request, 'order_success.html', context)
@@ -238,6 +250,15 @@ def create_custom_cake_order(request):
         delivery_date = request.POST.get('DATE')
         delivery_time = request.POST.get('TIME')
 
+        plus_20 = None
+        days_before_delivery = datetime.strptime(
+            delivery_date, '%Y-%m-%d'
+        ).date() - date.today()
+
+        if not days_before_delivery >= timedelta(hours=24):
+            plus_20 = total_price * Decimal(0.2)
+            total_price += plus_20
+
         order = Order.objects.create(
             customer=user,
             name=name,
@@ -258,7 +279,8 @@ def create_custom_cake_order(request):
         )
 
         context = {
-            'order': order
+            'order': order,
+            'plus_20': plus_20
         }
 
         return render(request, 'order_success.html', context)

@@ -86,16 +86,28 @@ Vue.createApp({
                     return ' адрес';
                 },
                 date: (value) => {
-                    if (value) {
-                        return true;
+                    if (!value) {
+                        return ' дату доставки (не раньше сегодняшней)';
                     }
-                    return ' дату доставки';
+                    const today = new Date().setHours(0, 0, 0, 0);
+                    const selectedDate = new Date(value).setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate < today) {
+                        return ' дату доставки (не раньше сегодняшней)';
+                    }
+                    return true;
                 },
                 time: (value) => {
-                    if (value) {
-                        return true;
+                    if (!value) {
+                        return ' время доставки (от 10 до 23 часов)';
                     }
-                    return ' время доставки';
+                    const timeParts = value.split(':');
+                    const hours = parseInt(timeParts[0], 10);
+
+                    if (hours < 10 || hours > 23) {
+                        return ' время доставки (от 10 до 23 часов)';
+                    }
+                    return true;
                 }
             },
             DATA: djangoData,

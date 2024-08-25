@@ -19,7 +19,8 @@
                 </form>
                 
                 <div class="modal-footer d-flex flex-column justify-content-between align-items-center text-center border-0 mx-5">
-                    <p class="fs_12 cake_grey">Есть аккаунт? Войти</p>
+                    <p class="fs_12 cake_grey">Нажимая кнопку 'Отправить', я даю своё <a class="fs_12 cake_grey" href="{% static 'pdfs/agreement.pdf' %}">согласие на обработку моих персональных данных.</a></p>
+                    <p class="fs_12 cake_grey">Есть аккаунт? <a class="fs_12 cake_grey" href="{% url 'accounts:login' %}">Войти</a></p>
                 </div>
                 {% if errors %}
                     <div class="modal-footer d-flex flex-column justify-content-between align-items-center text-center border-0 mx-5">
