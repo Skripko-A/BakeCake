@@ -70,11 +70,9 @@ class ReferalLinkAdmin(admin.ModelAdmin):
         for obj in queryset:
             try:
                 parsed_url = urlparse(obj.link)
-                if not parsed_url.scheme or not parsed_url.netloc or len(parsed_url.path.split('/')) < 4:
-                    logger.error(f'Invalid URL format for link: {obj.link}')
-                    continue
-                short_link_alias = parsed_url.path.split('/')[3]
-                url = f'https://ishortn.ink/api/v1/analytics/{short_link_alias}'
+                logger.info(parsed_url)
+                short_link_alias = parsed_url.path
+                url = f'https://ishortn.ink/api/v1/analytics{short_link_alias}'
                 logger.info(f'Fetching analytics for URL: {url}')
                 response = requests.get(url, headers=headers)
                 if response.status_code == 200:
@@ -85,6 +83,5 @@ class ReferalLinkAdmin(admin.ModelAdmin):
                     logger.error(f'Error fetching clicks info for link: {response.status_code} - {response.text}')
             except Exception as e:
                 logger.error(f'Exception occurred: {e}')
-
         return super().changelist_view(request, extra_context)
 
