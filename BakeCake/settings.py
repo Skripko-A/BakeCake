@@ -11,6 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env.str('SECRET_KEY')
 
+ISHORTN_TOKEN = env.str('ISHORTN_TOKEN')
+
 DEBUG = env.bool('DEBUG', False)
 
 STATIC_URL = 'static/'
