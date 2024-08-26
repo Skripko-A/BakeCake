@@ -277,11 +277,20 @@
 	<script>
         const djangoCosts = {{ js_costs|safe }};
 		const djangoData = {{ js_data|safe }};
-		const userData = {
-			name: "{{ request.user.first_name }}",
-			email: "{{ request.user.email }}",
-			phone: "{{ request.user.phone_number }}",
-			address: "{{ request.user.address }}"
-    };
+		{% if request.user.address %}
+			const userData = {
+				name: "{{ request.user.first_name }}",
+				email: "{{ request.user.email }}",
+				phone: "{{ request.user.phone_number }}",
+				address: "{{ request.user.address }}"
+			};
+		{% else %}
+			const userData = {
+				name: "{{ request.user.first_name }}",
+				email: "{{ request.user.email }}",
+				phone: "{{ request.user.phone_number }}",
+				address: ""
+			};
+		{% endif %}
     </script>
 {% endblock %}

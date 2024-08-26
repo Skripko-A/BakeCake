@@ -47,6 +47,9 @@ body {
 .cake_grey {
     color: #8C99AA !important;
 }
+.cake_red {
+    color: #ff0000 !important;
+}
 .cake__hover:hover span {
     color: #DA87A9 !important;
 }

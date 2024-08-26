@@ -59,18 +59,28 @@
 				<h2 class="fs_40 cake_pink mt-5">Мои заказы</h2>
 				{% if request.user.orders.all %}
 				  {% for order in request.user.orders.all %}
+				    <h4 class="cake_blue">Заказ №{{ order.id }}</h4>
 				    {% if order.cake %}
-				      <h4>{{ order.cake }} Цена: {{ order.cake.price }} р.</h4>
+				      <h5>Торт: {{ order.cake }}<br>Цена: {{ order.price }}₽</h5>
 				    {% elif order.shape %}
-				      <h4>{{ order.levels_number }} слой, {{ order.shape.get_title_display }},
-				      		{{ order.topping }}, {{ order.berry }}, {{ order.decor }}</h4>
-						{% if order.inscription %}:
-							<h4>Надпись: {{ order.inscription }}</h4>
-						{% else %}
-							<h4>Без надписи</h4>
-						{% endif %}
-					  <h4>Цена: {{ order.price }}</h4>
+				      <h5>Пользовательский торт</h5>
+					  <h5>Количество слоёв: {{ order.levels_number }}</h5>
+					  <h5>Форма: {{ order.shape.get_title_display }}</h5>
+					  <h5>Топпинг: {{ order.topping }}</h5>
+					  {% if order.berry %}
+					    <h5>Ягода: {{ order.berry }}</h5>
+					  {% endif %}
+					  {% if order.decor %}
+					    <h5>Декор: {{ order.decor }}</h5>
+					  {% endif %}
+					  {% if order.inscription %}
+					  	<h5>Надпись: {{ order.inscription }}</h5>
+					  {% else %}
+					  	<h5>Без надписи</h5>
+					  {% endif %}
+					  <h5>Цена: {{ order.price }}₽</h5>
 				    {% endif %}
+					<p></p>
 				  {% endfor %}
 				{% else %}
   <div class="no-orders text-center">
