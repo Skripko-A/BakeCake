@@ -31,7 +31,9 @@ class CakeAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'address', 'date')
+    list_display = ('id', 'phone', 'customer', 'address', 'date', 'time')
+    search_fields = ('id', 'phone')
+    list_filter = ('date',)
 
 
 @admin.register(Topping)

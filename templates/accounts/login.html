@@ -11,24 +11,22 @@
                 <form method="post" action="{% url 'accounts:login' %}" class="">
                     {% csrf_token %}
                     <input type="text" name="phone_number" class="form-control cake__textinput" placeholder="+7(999)999-99-99" required="">
-                    
-                    
                     <button type="submit" class="btn text-white w-100 rounded-pill mt-3 py-2 shadow-none cake__button fs_12 cake__bg_pink">Отправить</button>
                 </form>
-                
-                <div class="modal-footer d-flex flex-column justify-content-between align-items-center text-center border-0 mx-5">
-                    <p class="fs_12 cake_grey">Нет аккаунта? <a class="fs_12 cake_grey" href="{% url 'accounts:register' %}">Зарегистрироваться</a></p>
-                </div>
                 {% if errors %}
                     <div class="modal-footer d-flex flex-column justify-content-between align-items-center text-center border-0 mx-5">
                         {% for error in errors.phone_number %}
-                            <p class="fs_12 cake_grey">{{ error }}</p>
+                            <p class="fs_12 cake_red">{{ error }}</p>
                         {% endfor %}
                         {% for error in errors.user %}
-                            <p class="fs_12 cake_grey">{{ error }}</p>
+                            <p class="fs_12 cake_red">{{ error }}</p>
                         {% endfor %}
                     </div>
                 {% endif %}
+                <div class="modal-footer d-flex flex-column justify-content-between align-items-center text-center border-0 mx-5">
+                    <p class="fs_12 cake_grey">Нет аккаунта? <a class="fs_12 cake_grey" href="{% url 'accounts:register' %}">Зарегистрироваться</a></p>
+                </div>
+                
             </div>
         </div>
     </div>
