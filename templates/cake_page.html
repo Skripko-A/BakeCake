@@ -32,53 +32,57 @@
             <p></p>
             <div class="col-6 col-lg-4 d-flex flex-column align-items-center">
                 <h2 class="font_Gogh fs_40 cake_blue text-center mb-3">Заказать этот торт</h2>
-                <form method="post" action="{% url 'create_regular_cake_order' cake_id  %}">
-                    {% csrf_token %}
-                    Имя:<br>
-                    <input type="text" name="name" style="width: 100%;" placeholder="Имя" required="" value="{{ user.first_name }}">
-                    <br><br>
-                    {% for error in errors.name %}
-                            <p style="color: red;">{{ error }}</p>
-                    {% endfor %}
-                    Номер телефона:<br>
-                    <input type="tel" name="phone" style="width: 100%;" placeholder="+7(999)999-99-99" required="" value="{{ user.phone_number }}">
-                    <br><br>
-                    {% for error in errors.phone %}
-                            <p style="color: red;">{{ error }}</p>
-                    {% endfor %}
-                    Email:<br>
-                    <input type="email" name="email" style="width: 100%;" placeholder="example@example.com" required="" value="{{ user.email }}">
-                    <br><br>
-                    {% for error in errors.email %}
-                            <p style="color: red;">{{ error }}</p>
-                    {% endfor %}
-                    Адрес доставки: <br>
-                    <input type="text" name="address" style="width: 100%;" placeholder="Адрес" required="" value="{{ user.address }}">
-                    <br><br>
-                    {% for error in errors.address %}
-                            <p style="color: red;">{{ error }}</p>
-                    {% endfor %}
-                    Дата доставки:<br>
-                    <input type="date" name="date" style="width: 100%;" placeholder="Дата доставки" required="">
-                    <br><br>
-                    {% for error in errors.date %}
-                            <p style="color: red;">{{ error }}</p>
-                    {% endfor %}
-                    Время доставки:<br>
-                    <input type="time" name="time" style="width: 100%;" placeholder="Время доставки" required="">
-                    <br><br>
-                    {% for error in errors.time %}
-                            <p style="color: red;">{{ error }}</p>
-                    {% endfor %}
-                    Комментарий к заказу:<br>
-                    <input type="text" name="comment" style="width: 100%;" placeholder="Комментарий к заказу">
-                    <br><br>
-                    Комментарий к курьеру:<br>
-                    <input type="text" name="delivery_comment" style="width: 100%;" placeholder="Комментарий к курьеру">
-                    <button type="submit" class="btn text-white w-100 rounded-pill mt-3 py-2 shadow-none cake__button fs_12 cake__bg_pink">Заказать</button>
-                    <p></p>
-                    <p class="fs_12 cake_grey">Нажимая кнопку 'Отправить', я даю своё <a class="fs_12 cake_grey" href="{% static 'pdfs/agreement.pdf' %}">согласие на обработку моих персональных данных.</a></p>
-                </form>
+                {% if not request.user.is_authenticated %}
+                    <p>Для создания заказа необходима <a href="{% url 'accounts:login' %}">авторизация</a></p>
+                {% else %}
+                    <form method="post" action="{% url 'create_regular_cake_order' cake_id  %}">
+                        {% csrf_token %}
+                        Имя:<br>
+                        <input type="text" name="name" style="width: 100%;" placeholder="Имя" required="" value="{{ user.first_name }}">
+                        <br><br>
+                        {% for error in errors.name %}
+                                <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                        Номер телефона:<br>
+                        <input type="tel" name="phone" style="width: 100%;" placeholder="+7(999)999-99-99" required="" value="{{ user.phone_number }}">
+                        <br><br>
+                        {% for error in errors.phone %}
+                                <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                        Email:<br>
+                        <input type="email" name="email" style="width: 100%;" placeholder="example@example.com" required="" value="{{ user.email }}">
+                        <br><br>
+                        {% for error in errors.email %}
+                                <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                        Адрес доставки: <br>
+                        <input type="text" name="address" style="width: 100%;" placeholder="Адрес" required="" value="{{ user.address }}">
+                        <br><br>
+                        {% for error in errors.address %}
+                                <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                        Дата доставки:<br>
+                        <input type="date" name="date" style="width: 100%;" placeholder="Дата доставки" required="">
+                        <br><br>
+                        {% for error in errors.date %}
+                                <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                        Время доставки:<br>
+                        <input type="time" name="time" style="width: 100%;" placeholder="Время доставки" required="">
+                        <br><br>
+                        {% for error in errors.time %}
+                                <p style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                        Комментарий к заказу:<br>
+                        <input type="text" name="comment" style="width: 100%;" placeholder="Комментарий к заказу">
+                        <br><br>
+                        Комментарий к курьеру:<br>
+                        <input type="text" name="delivery_comment" style="width: 100%;" placeholder="Комментарий к курьеру">
+                        <button type="submit" class="btn text-white w-100 rounded-pill mt-3 py-2 shadow-none cake__button fs_12 cake__bg_pink">Заказать</button>
+                        <p></p>
+                        <p class="fs_12 cake_grey">Нажимая кнопку 'Отправить', я даю своё <a class="fs_12 cake_grey" href="{% static 'pdfs/agreement.pdf' %}">согласие на обработку моих персональных данных.</a></p>
+                    </form>
+                {% endif %}
             </div>
         </article>
     </div>
