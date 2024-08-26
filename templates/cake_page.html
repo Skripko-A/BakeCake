@@ -56,7 +56,11 @@
                                 <p style="color: red;">{{ error }}</p>
                         {% endfor %}
                         Адрес доставки: <br>
-                        <input type="text" name="address" style="width: 100%;" placeholder="Адрес" required="" value="{{ user.address }}">
+                        {% if user.address %}
+                            <input type="text" name="address" style="width: 100%;" placeholder="Адрес" required="" value="{{ user.address }}">
+                        {% else %}
+                            <input type="text" name="address" style="width: 100%;" placeholder="Адрес" required="">
+                        {% endif %}
                         <br><br>
                         {% for error in errors.address %}
                                 <p style="color: red;">{{ error }}</p>
